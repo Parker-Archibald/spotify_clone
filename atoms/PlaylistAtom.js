@@ -24,3 +24,8 @@ export const isPlayingState = atom ({
     key: 'isPlayingState',
     default: false
 })
+
+export const queueState = atom({
+    key: 'queueState',
+    default: false
+})
