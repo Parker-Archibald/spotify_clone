@@ -47,7 +47,8 @@ const Center = () => {
     }, [playlistId])
 
     useEffect(() => {
-        setPlaylist([])
+        if(playlistId) {
+            setPlaylist([])
             fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
             method: 'GET', headers: {
                 'Accept': 'application/json',
@@ -65,25 +66,28 @@ const Center = () => {
                     setIsOpen(true)
                 }
             }) 
+        }
 
     }, [playlistId, spotifyApi])
     
     useEffect(() => {
-        fetch(`https://api.spotify.com/v1/me/player/devices`, {
-            method: 'GET', headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + session?.user?.accessToken
-            }
-        })
-        .then(results => results.json()) 
-        .then(results => setDeviceId(results?.devices?.[0].id))
-        .catch(err => {
-            {
-                console.log('something went wrong', err)
-                setIsOpen(true)
-            }
-        }) 
+        if(session) {
+            fetch(`https://api.spotify.com/v1/me/player/devices`, {
+                method: 'GET', headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + session?.user?.accessToken
+                }
+            })
+            .then(results => results.json()) 
+            .then(results => setDeviceId(results?.devices?.[0].id))
+            .catch(err => {
+                {
+                    console.log('something went wrong', err)
+                    setIsOpen(true)
+                }
+            })
+        } 
     }, [session])
 
     const handlePlaySong = async (trackId) => {
