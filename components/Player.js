@@ -6,6 +6,7 @@ import { currentSongState, isPlayingState } from "@/atoms/PlaylistAtom";
 import {PiQueueLight} from 'react-icons/pi'
 import {BiSpeaker, BiVolumeFull} from 'react-icons/bi'
 import { queueState } from "@/atoms/PlaylistAtom";
+import Banner from '@/components/Banner'
 
 const Player = () => {
 
@@ -15,27 +16,35 @@ const Player = () => {
     const [queueOpen, setQueueOpen] = useRecoilState(queueState)
 
     useEffect(() => {
+        console.log('called')
             if(isPlaying) {
-                fetch(`https://api.spotify.com/v1/me/player/currently-playing`, {
-                method: 'GET', headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + session?.user?.accessToken
-                }
-                })
-                .then(results => results.json())
-                .then(results => {
-                    setCurrentSong(results);
-                    if(results.is_playing) {
-                        setIsPlaying(true)
-                    }
-                    else {
-                        setIsPlaying(false)
-                    }
-                })
+                getCurrSong()
             }
     }, [session, isPlaying])
 
     // console.log(currentSong)
+
+    const getCurrSong = async () => {
+        await fetch(`https://api.spotify.com/v1/me/player/currently-playing`, {
+            method: 'GET', headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + session?.user?.accessToken
+            }
+            })
+            .then(results => results.json())
+            .then(results => {
+                setCurrentSong(results);
+                if(results.is_playing) {
+                    setIsPlaying(true)
+                }
+                else {
+                    setIsPlaying(false)
+                }
+                setTimeout(() => {
+                    getCurrSong()
+                }, results.item.duration_ms - results.progress_ms)
+            })
+    }
 
     const handlePause = async () => {
         await fetch(`https://api.spotify.com/v1/me/player/pause`, {
@@ -55,7 +64,7 @@ const Player = () => {
         .then(results => setCurrentSong(results))
 
         setIsPlaying(false)
-        }
+    }
 
     const handlePlay = async () => {
         await fetch(`https://api.spotify.com/v1/me/player/play`, {
@@ -126,6 +135,7 @@ const Player = () => {
 
     return (
         <div className="w-screen fixed bottom-0 bg-gray-900 bg-opacity-30 backdrop-blur-sm h-20 flex items-center z-20">
+            <Banner/>
             <div className="flex items-center w-1/3 h-full pl-10">
                 <img src={currentSong?.item?.album?.images?.[0]?.url} className="w-16 h-16 rounded-lg"/>
                 <div className="ml-10">

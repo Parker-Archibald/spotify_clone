@@ -3,7 +3,7 @@ import {HomeIcon, MagnifyingGlassIcon, QueueListIcon, PlusCircleIcon, HeartIcon,
 import { signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
-import {playlistIdState} from '@/atoms/PlaylistAtom'
+import {playlistIdState, searchState} from '@/atoms/PlaylistAtom'
 import {BsDot} from 'react-icons/bs'
 
 const Sidebar = ( ) => {
@@ -12,6 +12,7 @@ const Sidebar = ( ) => {
     const {data: session, status} = useSession(); 
     const [playlists, setPlaylists] = useState([])
     const [playlistId, setPlaylistId] = useRecoilState(playlistIdState)
+    const [searchOpen, setSearchOpen] = useRecoilState(searchState)
 
     useEffect(() => {
 
@@ -43,7 +44,7 @@ const Sidebar = ( ) => {
                     <HomeIcon className='w-5 h-5'/>
                     <p>Home</p>
                 </button>
-                <button className='flex items-center space-x-2 hover:text-white'>
+                <button className='flex items-center space-x-2 hover:text-white' onClick={() => setSearchOpen(true)}>
                     <MagnifyingGlassIcon className='w-5 h-5'/>
                     <p>Search</p>
                 </button>
@@ -69,7 +70,7 @@ const Sidebar = ( ) => {
             {/* Playlists */}
             <section className='overflow-y-scroll scrollbar-hide h-[65%] pb-24'>
                 {playlists?.map(playlist => (
-                    <div key={playlist.id} className='flex space-x-4 hover:bg-gray-900 px-4 py-2 rounded-xl hover:text-white cursor-pointer' onClick={() => setPlaylistId(playlist.id)}>
+                    <div key={playlist.id} className='flex space-x-4 hover:bg-gray-900 px-4 py-2 rounded-xl hover:text-white cursor-pointer' onClick={() => {setPlaylistId(playlist.id); setSearchOpen(false)}}>
                         <img src={playlist.images[0].url} className='w-16 rounded-xl'/>
                         <div>
                             <p key={playlist.id} className=''>{playlist.name}</p>

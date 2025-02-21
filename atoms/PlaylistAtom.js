@@ -29,3 +29,8 @@ export const queueState = atom({
     key: 'queueState',
     default: false
 })
+
+export const searchState = atom({
+    key: 'searchState',
+    default: false
+})
